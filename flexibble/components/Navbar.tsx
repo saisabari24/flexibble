@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { NavLinks } from '@/constants'
-import { link } from 'fs'
-import { Session } from 'inspector'
 import AuthProviders from './AuthProviders'
 
 const Navbar = () => {
