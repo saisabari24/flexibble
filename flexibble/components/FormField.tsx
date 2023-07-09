@@ -1,7 +1,43 @@
-import React from "react"
+type Props = {
+  type?: string
+  title: string
+  state: string
+  placeholder: string
+  isTextArea?: boolean
+  setState: (value: string) => void
+}
 
-const FormField = () => {
-  return <div>FormField</div>
+const FormField = ({
+  type,
+  title,
+  state,
+  placeholder,
+  isTextArea,
+  setState,
+}: Props) => {
+  return (
+    <div className=" flexStart w-full flex-col gap-4">
+      <label className="w-full text-gray-100">{title}</label>
+      {isTextArea ? (
+        <textarea
+          placeholder={placeholder}
+          value={state}
+          required
+          className="form_field-input"
+          onChange={(e) => setState(e.target.value)}
+        />
+      ) : (
+        <input
+          type={type || "text"}
+          placeholder={placeholder}
+          value={state}
+          required
+          className="form_field-input"
+          onChange={(e) => setState(e.target.value)}
+        />
+      )}
+    </div>
+  )
 }
 
 export default FormField
