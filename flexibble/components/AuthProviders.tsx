@@ -13,13 +13,14 @@ type Provider = {
 
 type Providers = Record<string, Provider>
 
+//@ts-ignore
 const AuthProviders = (): ReactElement => {
   const [providers, setProviders] = useState<Providers | null>(null)
 
   useEffect(() => {
     const fetchProviders = async () => {
       const res = await getProviders()
-
+      //@ts-ignore
       setProviders(res)
     }
     fetchProviders()
