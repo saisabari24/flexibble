@@ -1,38 +1,37 @@
 "use client"
-import { SessionInterface } from "@/common.types"
-import { ChangeEvent, useState } from "react"
+
 import Image from "next/image"
-import FormField from "./FormField"
-import { categoryFilters } from "@/constants"
-import CustomMenu from "./CustomMenu"
-import Button from "./Button"
-import { createNewProject, fetchToken } from "@/lib/actions"
+import React, { ChangeEvent, FormEvent, useState } from "react"
 import { useRouter } from "next/navigation"
+
+import FormField from "./FormField"
+import Button from "./Button"
+import CustomMenu from "./CustomMenu"
+import { updateProject, createNewProject, fetchToken } from "@/lib/actions"
+import { FormState, ProjectInterface, SessionInterface } from "@/common.types"
+import { categoryFilters } from "@/constants"
+
 type Props = {
   type: string
   session: SessionInterface
+  project?: ProjectInterface
 }
-const ProjectForm = ({ type, session }: Props) => {
+
+const ProjectForm = ({ type, session, project }: Props) => {
   const router = useRouter()
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const [submitting, setSubmitting] = useState<boolean>(false)
+  const [form, setForm] = useState<FormState>({
+    title: project?.title || "",
+    description: project?.description || "",
+    image: project?.image || "",
+    liveSiteUrl: project?.liveSiteUrl || "",
+    githubUrl: project?.githubUrl || "",
+    category: project?.category || "",
+  })
 
-    setIsSubmitting(true)
-
-    const { token } = await fetchToken()
-
-    try {
-      if (type === "create") {
-        await createNewProject(form, session?.user?.id, token)
-
-        router.push("/")
-      }
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsSubmitting(false)
-    }
+  const handleStateChange = (fieldName: keyof FormState, value: string) => {
+    setForm((prevForm) => ({ ...prevForm, [fieldName]: value }))
   }
 
   const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
@@ -43,8 +42,11 @@ const ProjectForm = ({ type, session }: Props) => {
     if (!file) return
 
     if (!file.type.includes("image")) {
-      return alert("Please upload an image file")
+      alert("Please upload an image!")
+
+      return
     }
+
     const reader = new FileReader()
 
     reader.readAsDataURL(file)
@@ -56,66 +58,88 @@ const ProjectForm = ({ type, session }: Props) => {
     }
   }
 
-  const handleStateChange = (fieldName: string, value: string) => {
-    setform((prevState) => ({ ...prevState, [fieldName]: value }))
+  const handleFormSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+
+    setSubmitting(true)
+
+    const { token } = await fetchToken()
+
+    try {
+      if (type === "create") {
+        await createNewProject(form, session?.user?.id, token)
+
+        router.push("/")
+      }
+
+      if (type === "edit") {
+        await updateProject(form, project?.id as string, token)
+
+        router.push("/")
+      }
+    } catch (error) {
+      alert(
+        `Failed to ${
+          type === "create" ? "create" : "edit"
+        } a project. Try again!`
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [form, setform] = useState({
-    title: "",
-    description: "",
-    image: "",
-    liveSiteUrl: "",
-    githubUrl: "",
-    category: "",
-  })
   return (
     <form onSubmit={handleFormSubmit} className="flexStart form">
       <div className="flexStart form_image-container">
         <label htmlFor="poster" className="flexCenter form_image-label">
-          {!form.image && "choose a poster for your project"}
+          {!form.image && "Choose a poster for your project"}
         </label>
         <input
           id="image"
           type="file"
           accept="image/*"
-          required={type === "create"}
+          required={type === "create" ? true : false}
           className="form_image-input"
-          onChange={handleChangeImage}
+          onChange={(e) => handleChangeImage(e)}
         />
         {form.image && (
           <Image
             src={form?.image}
             className="z-20 object-contain sm:p-10"
-            alt="project poster"
+            alt="image"
             fill
           />
         )}
       </div>
+
       <FormField
         title="Title"
         state={form.title}
         placeholder="Flexibble"
         setState={(value) => handleStateChange("title", value)}
       />
+
       <FormField
         title="Description"
         state={form.description}
-        placeholder="Description"
+        placeholder="Showcase and discover remarkable developer projects."
+        isTextArea
         setState={(value) => handleStateChange("description", value)}
       />
+
       <FormField
         type="url"
         title="Website URL"
         state={form.liveSiteUrl}
-        placeholder="Your projects liveStiteUrl"
+        placeholder="https://jsmastery.pro"
         setState={(value) => handleStateChange("liveSiteUrl", value)}
       />
+
       <FormField
         type="url"
-        title="Github URL"
+        title="GitHub URL"
         state={form.githubUrl}
-        placeholder="https://github.com/saisabari24/"
+        placeholder="https://github.com/adrianhajdin"
         setState={(value) => handleStateChange("githubUrl", value)}
       />
 
@@ -126,16 +150,16 @@ const ProjectForm = ({ type, session }: Props) => {
         setState={(value) => handleStateChange("category", value)}
       />
 
-      <div className="flexStart w-full ">
+      <div className="flexStart w-full">
         <Button
           title={
-            isSubmitting
+            submitting
               ? `${type === "create" ? "Creating" : "Editing"}`
               : `${type === "create" ? "Create" : "Edit"}`
           }
           type="submit"
-          leftIcon={isSubmitting ? "" : "/plus.svg"}
-          isSubmitting={isSubmitting}
+          leftIcon={submitting ? "" : "/plus.svg"}
+          isSubmitting={submitting}
         />
       </div>
     </form>
