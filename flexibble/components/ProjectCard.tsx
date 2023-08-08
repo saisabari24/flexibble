@@ -23,6 +23,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
       String((Math.floor(Math.random() * 10000) / 1000).toFixed(1) + "k")
     )
   }, [])
+
   return (
     <div className="flexCenter drop-shadow-card flex-col rounded-2xl">
       <Link
@@ -34,12 +35,14 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
           width={414}
           height={314}
           className="h-full w-full rounded-2xl object-cover"
-          alt="Project Image"
+          alt="project image"
         />
-        <div className="profile__card-title hidden group-hover:flex">
+
+        <div className="profile_card-title hidden group-hover:flex">
           <p className="w-full">{title}</p>
         </div>
       </Link>
+
       <div className="flexBetween mt-3 w-full px-2 text-sm font-semibold">
         <Link href={`/profile/${userId}`}>
           <div className="flexCenter gap-2">
@@ -48,7 +51,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
               width={24}
               height={24}
               className="rounded-full"
-              alt="Profile Image"
+              alt="profile image"
             />
             <p>{name}</p>
           </div>
@@ -60,7 +63,7 @@ const ProjectCard = ({ id, image, title, name, avatarUrl, userId }: Props) => {
             <p className="text-sm">{randomLikes}</p>
           </div>
           <div className="flexCenter gap-2">
-            <Image src="/eye.svg" width={13} height={12} alt="eye" />
+            <Image src="/eye.svg" width={12} height={9} alt="eye" />
             <p className="text-sm">{randomViews}</p>
           </div>
         </div>
