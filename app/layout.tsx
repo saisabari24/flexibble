@@ -16,11 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ErrorBoundary>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </ErrorBoundary>
+        {/* <ErrorBoundary> */}
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
+        {/* </ErrorBoundary> */}
       </body>
     </html>
   )
