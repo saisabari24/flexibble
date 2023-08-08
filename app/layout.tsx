@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar"
 import "./globals.css"
 import Footer from "@/components/Footer"
+import ErrorBoundary from "../components/ErrorBoundary"
 
 export const metadata = {
   title: "Flexibble",
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <ErrorBoundary>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </ErrorBoundary>
       </body>
     </html>
   )
